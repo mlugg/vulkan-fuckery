@@ -1,14 +1,14 @@
 BUILD_DIR=build
 SRC_DIR=src
 
-CC=tcc
+CC=gcc
 
 SRC=`find $SRC_DIR/ -name '*.c'`
 HDR=`find $SRC_DIR/ -name '*.h'`
 OBJ=${SRC:$SRC_DIR/%.c=$BUILD_DIR/%.o}
 
-CFLAGS=-Wall -Werror -Wextra -std=c11 -g
-LDFLAGS=
+CFLAGS=-Wall -Wextra -Werror -std=c11 -g
+LDFLAGS=-lvulkan
 
 all:V: vulkan-fuckery
 
