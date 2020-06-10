@@ -46,5 +46,19 @@ extern VkQueue g_present_queue;
 extern struct sync_objects g_frame_sync[MAX_CONCURRENT_FRAMES];
 extern struct swapchain_images g_swapchain_images;
 
+struct vertex {
+  struct {
+    float x, y;
+  } pos;
+
+  struct {
+    float r, g, b;
+  } color;
+};
+
+extern struct vertex g_vertices[6];
+
+extern VkDeviceMemory g_vertex_buffer_mem;
+extern VkBuffer g_vertex_buffer;
 
 #endif

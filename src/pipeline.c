@@ -112,9 +112,33 @@ void pipeline_create(void) {
     }
   };
 
+  VkVertexInputBindingDescription vert_binding_description = {
+    .binding = 0,
+    .stride = sizeof g_vertices[0],
+    .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+  };
+
+  VkVertexInputAttributeDescription vert_attr_descriptions[] = {
+    {
+      .location = 0,
+      .binding = 0,
+      .format = VK_FORMAT_R32G32_SFLOAT,
+      .offset = offsetof(struct vertex, pos),
+    }, {
+      .location = 1,
+      .binding = 0,
+      .format = VK_FORMAT_R32G32B32_SFLOAT,
+      .offset = offsetof(struct vertex, color),
+    },
+  };
+
   VkPipelineVertexInputStateCreateInfo vertex_input_state = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-  }; // TODO: actually input vertex data
+    .vertexBindingDescriptionCount = 1,
+    .pVertexBindingDescriptions = &vert_binding_description,
+    .vertexAttributeDescriptionCount = sizeof vert_attr_descriptions / sizeof vert_attr_descriptions[0],
+    .pVertexAttributeDescriptions = vert_attr_descriptions,
+  };
 
   VkPipelineInputAssemblyStateCreateInfo input_assembly_state = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,

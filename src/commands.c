@@ -66,7 +66,10 @@ void commands_create_buffers(void) {
 
     vkCmdBindPipeline(buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, g_pipeline);
 
-    vkCmdDraw(buffers[i], 3, 1, 0, 0);
+    VkDeviceSize offset = 0;
+    vkCmdBindVertexBuffers(buffers[i], 0, 1, &g_vertex_buffer, &offset);
+
+    vkCmdDraw(buffers[i], sizeof g_vertices / sizeof g_vertices[0], 1, 0, 0);
 
     vkCmdEndRenderPass(buffers[i]);
 

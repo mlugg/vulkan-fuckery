@@ -6,36 +6,29 @@
 #include "phys_device.h"
 #include "display.h"
 #include "device.h"
+#include "buffer.h"
 #include "swapchain.h"
 #include "pipeline.h"
 #include "framebuffer.h"
 #include "commands.h"
 #include "render.h"
 
-VkInstance g_inst;
-VkPhysicalDevice g_phys_dev;
-VkSurfaceKHR g_surface;
-VkDevice g_device;
-VkSwapchainKHR g_swapchain;
-VkExtent2D g_swapchain_extent;
-VkPipeline g_pipeline;
-VkPipelineLayout g_pipeline_layout;
-VkFormat g_swapchain_image_format;
-VkRenderPass g_render_pass;
-VkCommandPool g_command_pool;
-VkQueue g_graphics_queue;
-VkQueue g_present_queue;
-struct sync_objects g_frame_sync[MAX_CONCURRENT_FRAMES];
-struct swapchain_images g_swapchain_images;
-
 static void _exit_cleanup(void) {
+  LOG("start cleanup");
   for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES; ++i) {
-    if (g_frame_sync[i].render_finished) vkDestroySemaphore(g_device, g_frame_sync[i].render_finished, NULL);
+    if (g_frame_sync[i].render_finished) {
+      LOG("try destroy rf semaphore");
+      LOG("handle is %p", g_frame_sync[i].render_finished);
+      vkDestroySemaphore(g_device, g_frame_sync[i].render_finished, NULL);
+    }
     if (g_frame_sync[i].image_available) vkDestroySemaphore(g_device, g_frame_sync[i].image_available, NULL);
     if (g_frame_sync[i].in_progress) vkDestroyFence(g_device, g_frame_sync[i].in_progress, NULL);
   }
 
   if (g_command_pool) vkDestroyCommandPool(g_device, g_command_pool, NULL);
+
+  if (g_vertex_buffer) vkDestroyBuffer(g_device, g_vertex_buffer, NULL);
+  if (g_vertex_buffer_mem) vkFreeMemory(g_device, g_vertex_buffer_mem, NULL);
 
   for (size_t i = 0; i < g_swapchain_images.count; ++i) {
     if (g_swapchain_images.images[i].framebuffer) vkDestroyFramebuffer(g_device, g_swapchain_images.images[i].framebuffer, NULL);
@@ -50,6 +43,7 @@ static void _exit_cleanup(void) {
   }
 
   if (g_swapchain) vkDestroySwapchainKHR(g_device, g_swapchain, NULL);
+
   if (g_device) vkDestroyDevice(g_device, NULL);
   if (g_surface) vkDestroySurfaceKHR(g_inst, g_surface, NULL);
   if (g_inst) vkDestroyInstance(g_inst, NULL);
@@ -127,6 +121,8 @@ int main(int argc, char **argv) {
   pipeline_create();
 
   framebuffer_create_all();
+
+  buffer_init_vertex();
 
   commands_create_pool();
 

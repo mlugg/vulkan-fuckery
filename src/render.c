@@ -39,7 +39,7 @@ void render_loop(void) {
 
   uint32_t current_frame = 0;
 
-  time_t end = time(NULL) + 5;
+  time_t end = time(NULL) + 15;
 
   while (time(NULL) < end) {
     vkWaitForFences(g_device, 1, &g_frame_sync[current_frame].in_progress, VK_TRUE, UINT64_MAX);
